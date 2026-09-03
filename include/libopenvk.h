@@ -6,6 +6,7 @@
 typedef struct openvk_data {
     const char *instance;
     const char *user_agent;
+    const char *token;
 } openvk_data_t;
 
 // From api.c
@@ -32,13 +33,34 @@ void openvk_free(openvk_data_t *data);
 int openvk_set_instance(openvk_data_t *data, const char *api_base_url);
 
 /**
+ * openvk_set_token: Sets auth token to use to strdupped version
+ * @param data: data struct
+ * @param token: auth token
+ * @returns 0 on success
+ */
+int openvk_set_token(openvk_data_t *data, const char *token);
+
+/**
  * openvk_call: Calls openvk method
  * @param data: data struct
  * @param method: method to call
  * @param resp_buf: pointer to resp_buf(gets allocated by function)
+ * @param use_token: use token in request
+ * @param params: request paramets(can be set to 0)
  * @returns 0 on success
  */
-int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf);
+int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, bool use_token, const char *params);
+
+/**
+ * openvk_auth: Perform authentication and set token to use
+ * @param data: data struct
+ * @param user: Username
+ * @param password: Password
+ * @param two_fac_code: (Optional)2FA code
+ * @param is_roamin: https://openvk.github.io/docs/openvk_engine/api/authorization/#roaming
+ * @returns 0 on success, -1 on error
+ */
+int openvk_auth(openvk_data_t *data, const char *user, const char *password, const char *two_fac_code, bool is_roaming);
 
 /**
  * openvk_get_resp: Parses json and returns response node in resp_node

@@ -4,7 +4,7 @@
 struct ovk_instanceInfo openvk_ovk_aboutInstance(openvk_data_t *data) {
     const char *resp_buf;
     struct ovk_instanceInfo ret;
-    int ret2 = openvk_call(data, "ovk.aboutInstance", &resp_buf);
+    int ret2 = openvk_call(data, "ovk.aboutInstance", &resp_buf, false, 0);
     if (ret2) {
         return ret;
     }
@@ -58,7 +58,7 @@ struct ovk_instanceInfo openvk_ovk_aboutInstance(openvk_data_t *data) {
 
 const char *openvk_ovk_version(openvk_data_t *data) {
     const char *resp_buf;
-    int ret = openvk_call(data, "ovk.version", &resp_buf);
+    int ret = openvk_call(data, "ovk.version", &resp_buf, false, 0);
     if (ret) {
         return NULL;
     }
