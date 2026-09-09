@@ -6,6 +6,8 @@ add_library(openvk)
 target_sources(openvk
     PRIVATE
         src/api.c
+        src/classes/account.c
+        src/classes/audio.c
         src/classes/ovk.c
 )
 

@@ -3,6 +3,11 @@
 #include <jansson.h>
 #include "libopenvk_responses.h"
 
+// some helper macros
+
+#define JSON_STR(dict, key) json_string_value(json_object_get(dict, key))
+#define JSON_INT(dict, key) json_integer_value(json_object_get(dict, key))
+
 typedef struct openvk_data {
     const char *instance;
     const char *user_agent;
@@ -69,6 +74,32 @@ int openvk_auth(openvk_data_t *data, const char *user, const char *password, con
  * @returns error info in json_error_t if something got wrong
  */
 json_error_t openvk_get_resp(const char *resp, json_t **resp_node);
+
+// From classes/account.c
+
+/**
+ * openvk_account_getProfileInfo: calls api method account.getProfileInfo, parses response and returns profile info in struct ovk_getProfileInfo
+ * @param data: data struct
+ * @returns profile info
+ */
+struct ovk_getProfileInfo openvk_account_getProfileInfo(openvk_data_t *data);
+
+// From classes/audio.c
+
+/**
+ * openvk_audio_get: calls api method audio.get with specified parameters and returs parsed data in ovk_audio_get. You can set one parameter to 0 to use default value
+ * @param data: data struct
+ * (you can check descriptions of parameters in https://openvk.github.io/docs/openvk_engine/api/methods/audio/get/)
+ * @returns parsed data
+ */
+struct ovk_audio_get openvk_audio_get(openvk_data_t *data, 
+                                    int owner_id, 
+                                    int album_id, 
+                                    bool audio_ids, 
+                                    unsigned int offset, 
+                                    unsigned int count, 
+                                    bool uploaded_only);
+
 
 // From classes/ovk.c
 

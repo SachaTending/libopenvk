@@ -70,7 +70,7 @@ int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, 
     buf.size = 0;
 
     CURL *curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+    //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, data->user_agent);
     //curl_easy_setopt(curl, CURLOPT_URL, url_buf);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
@@ -78,10 +78,10 @@ int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, 
 
     char *enc_params, *full_url = 0;
     if (params) {
-        enc_params = curl_easy_escape(curl, params, 0);
-        size_t url_len = strlen(url_buf) + 1 + strlen(enc_params) + 1;
+        //enc_params = curl_easy_escape(curl, params, 0);
+        size_t url_len = strlen(url_buf) + 1 + strlen(params) + 1;
         full_url = malloc(url_len);
-        snprintf(full_url, url_len, "%s?%s\n", enc_params);
+        snprintf(full_url, url_len, "%s?%s", url_buf, params);
         curl_easy_setopt(curl, CURLOPT_URL, full_url);
     } else {
         curl_easy_setopt(curl, CURLOPT_URL, url_buf);
