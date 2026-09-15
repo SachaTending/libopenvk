@@ -40,6 +40,9 @@ int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo
     #undef set_var_int
     #undef set_var_str
 
+    json_decref(resp_node);
+    free(resp_buf);
+
     return OVK_API_OK;
 }
 
@@ -48,8 +51,32 @@ int openvk_account_setOnline(openvk_data_t *data) {
     int ret = openvk_call(data, "account.setOnline", &resp_buf, true, 0);
 
     if (ret != OVK_API_OK) {
+        return ret;
+    }
+    if (resp_buf[0] != '1') return OVK_API_ERROR; // in ovk's api spec account.setOnline by default returns 1, so i guess if response 1, then something went wrong
+    free(resp_buf);
+    return OVK_API_OK;
+}
+
+int openvk_account_getCounters(openvk_data_t *data, struct ovk_acc_getCounters *out) {
+    const char *resp_buf;
+    int ret = openvk_call(data, "account.getCounters", &resp_buf, true, 0);
+    if (ret != OVK_API_OK) {
+        return ret;
+    }
+
+    json_t *resp_node;
+    int err = openvk_get_resp(resp_buf, &resp_node);
+
+    if (!resp_node) {
         return OVK_API_ERROR;
     }
-    if (resp_buf[0] != '1') return OVK_API_ERROR; // by ovk's api spec account.setOnline by default returns 1, so i guess if response 1, then something went wrong
+
+    #define set_var_int(key) out->key = JSON_INT(resp_node, #key)
+    set_var_int(friends);
+    set_var_int(messages);
+    set_var_int(notifications);
+    #undef set_var_int
+
     return OVK_API_OK;
 }

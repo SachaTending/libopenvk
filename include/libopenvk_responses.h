@@ -56,6 +56,12 @@ struct ovk_getProfileInfo {
     int sex;
 };
 
+struct ovk_acc_getCounters {
+    int friends;
+    int notifications;
+    int messages;
+};
+
 struct ovk_audio_item {
     const char *unique_id;
     int aid;

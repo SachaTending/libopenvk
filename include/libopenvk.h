@@ -99,6 +99,14 @@ int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo
  */
 int openvk_account_setOnline(openvk_data_t *data);
 
+/**
+ * opemvk_account_getCounters: calls api method account.getCounters
+ * @param data: data struct
+ * @param out: pointer to struct to store results
+ * @returns OVK_API_OK on success
+ */
+int openvk_account_getCounters(openvk_data_t *data, struct ovk_acc_getCounters *out);
+
 // From classes/audio.c
 
 /**
