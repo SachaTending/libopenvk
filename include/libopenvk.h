@@ -107,6 +107,13 @@ int openvk_account_setOnline(openvk_data_t *data);
  */
 int openvk_account_getCounters(openvk_data_t *data, struct ovk_acc_getCounters *out);
 
+/**
+ * openvk_account_getBalance: calls api method account.getBalance and returns votes, or error(negative)
+ * @param data: data struct
+ * @returns vote count on success, negative error on... well... error
+ */
+int openvk_account_getBalance(openvk_data_t *data);
+
 // From classes/audio.c
 
 /**

@@ -80,3 +80,20 @@ int openvk_account_getCounters(openvk_data_t *data, struct ovk_acc_getCounters *
 
     return OVK_API_OK;
 }
+
+int openvk_account_getBalance(openvk_data_t *data) {
+    const char *resp_buf;
+    int ret = openvk_call(data, "account.getBalance", &resp_buf, true, 0);
+    if (ret != OVK_API_OK) {
+        return -ret;
+    }
+
+    json_t *resp_node;
+    int err = openvk_get_resp(resp_buf, &resp_node);
+
+    if (!resp_node) {
+        return -OVK_API_ERROR;
+    }
+
+    return JSON_INT(resp_node, "votes");
+}
