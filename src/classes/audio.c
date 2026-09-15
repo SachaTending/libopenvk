@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-struct ovk_audio_get openvk_audio_get(openvk_data_t *data, int owner_id, int album_id, bool audio_ids, unsigned int offset, unsigned int count, bool uploaded_only) {
+int openvk_audio_get(openvk_data_t *data, int owner_id, int album_id, bool audio_ids, unsigned int offset, unsigned int count, bool uploaded_only, struct ovk_audio_get *out) {
     char params[4096];
     #define add_param(...) snprintf(params+strlen(params), sizeof(params)-strlen(params), __VA_ARGS__);
     if (owner_id != -1) {
@@ -29,12 +29,10 @@ struct ovk_audio_get openvk_audio_get(openvk_data_t *data, int owner_id, int alb
     openvk_call(data, "audio.get", &resp_buf, 1, params);
     printf(resp_buf);
 
-    struct ovk_audio_get ret;
-
     json_t *resp_node;
-    json_error_t err = openvk_get_resp(resp_buf, &resp_node);
+    int err = openvk_get_resp(resp_buf, &resp_node);
     if (!resp_node) {
-        return ret; // This is horrible
+        return OVK_API_ERROR;
     }
 
     int item_count = JSON_INT(resp_node, "count");
@@ -59,8 +57,11 @@ struct ovk_audio_get openvk_audio_get(openvk_data_t *data, int owner_id, int alb
         items[i].item_int(audio, ready);
     }
 
-    ret.count = item_count;
-    ret.audios = items;
+    #undef item_str
+    #undef item_int
+
+    out->count = item_count;
+    out->audios = items;
     json_decref(resp_node);
-    return ret;
+    return OVK_API_OK;
 }

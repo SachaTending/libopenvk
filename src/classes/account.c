@@ -1,24 +1,23 @@
 #include <libopenvk.h>
 #include <string.h>
 
-struct ovk_getProfileInfo openvk_account_getProfileInfo(openvk_data_t *data) {
+int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo *out) {
     const char *resp_buf;
     int ret = openvk_call(data, "account.getProfileInfo", &resp_buf, true, 0);
 
-    struct ovk_getProfileInfo out;
-    memset(&out, 0, sizeof(struct ovk_getProfileInfo));
+    memset(out, 0, sizeof(struct ovk_getProfileInfo));
 
     json_t *resp_node;
-    json_error_t err = openvk_get_resp(resp_buf, &resp_node);
+    int err = openvk_get_resp(resp_buf, &resp_node);
 
     if (!resp_node) {
-        return out;
+        return OVK_API_ERROR;
     }
 
     //printf(resp_buf);
 
-    #define set_var_str(key) out. key = strdup(JSON_STR(resp_node, #key))
-    #define set_var_int(key) out. key = JSON_INT(resp_node, #key)
+    #define set_var_str(key) out->key = strdup(JSON_STR(resp_node, #key))
+    #define set_var_int(key) out->key = JSON_INT(resp_node, #key)
 
     set_var_str(first_name);
     set_var_str(last_name);
@@ -41,5 +40,5 @@ struct ovk_getProfileInfo openvk_account_getProfileInfo(openvk_data_t *data) {
     #undef set_var_int
     #undef set_var_str
 
-    return out;
+    return OVK_API_OK;
 }

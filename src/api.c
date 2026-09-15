@@ -95,14 +95,18 @@ int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, 
     CURLcode ret = curl_easy_perform(curl);
 
     if (full_url) {
-        curl_free(enc_params);
+        //curl_free(enc_params);
         free(full_url);
     }
 
     curl_easy_cleanup(curl);
 
-    if (ret != CURLE_OK) {
-        return ret;
+    if (ret == CURLE_COULDNT_RESOLVE_HOST || 
+        ret == CURLE_COULDNT_CONNECT || 
+        ret == CURLE_OPERATION_TIMEDOUT ||
+        ret == CURLE_RECV_ERROR || 
+        ret == CURLE_SEND_ERROR) {
+        return OVK_API_NET_ERROR;
     }
 
     *resp_buf = buf.buf;
@@ -148,27 +152,27 @@ int openvk_auth(openvk_data_t *data, const char *user, const char *password, con
     json_error_t err;
     json_t *root_n = json_loads(buf.buf, 0, &err);
     if (!root_n) {
-        return -1;
+        return OVK_API_JSON_PARSE_ERROR;
     }
 
     json_t *token_n = json_object_get(root_n, "access_token");
     if (!token_n) {
         json_decref(root_n);
-        return -1;
+        return OVK_API_ERROR; //  TODO: Return a reason  why
     }
 
     openvk_set_token(data, json_string_value(token_n));
 
-    return 0;
+    return OVK_API_OK;
 }
 
-json_error_t openvk_get_resp(const char *resp, json_t **resp_node) {
+int openvk_get_resp(const char *resp, json_t **resp_node) {
     json_error_t err;
     json_t *root = json_loads(resp, 0, &err);
     if (!root) {
-        return err;
+        return OVK_API_JSON_PARSE_ERROR;
     }
     json_t *r_node = json_object_get(root, "response");
     *resp_node = r_node;
-    return err;
+    return OVK_API_OK;
 }

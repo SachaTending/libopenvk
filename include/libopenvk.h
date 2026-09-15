@@ -14,12 +14,19 @@ typedef struct openvk_data {
     const char *token;
 } openvk_data_t;
 
+enum LIBOVK_ERROR {
+    OVK_API_OK = 0,
+    OVK_API_ERROR,
+    OVK_API_NET_ERROR,
+    OVK_API_JSON_PARSE_ERROR
+};
+
 // From api.c
 
 /**
  * openvk_init: Allocate and initialize openvk_data_t struct
  * @param data: Pointer to data pointer
- * @returns 0 on success, other value on error
+ * @returns OVK_API_OK, other value on error
  */
 int openvk_init(openvk_data_t **data);
 
@@ -33,7 +40,7 @@ void openvk_free(openvk_data_t *data);
  * openvk_set_instance: Sets instance api base url(without /method) to strdupped version
  * @param data: data struct
  * @param api_base_url: Instance api base url
- * @returns 0 on success
+ * @returns OVK_API_OK
  */
 int openvk_set_instance(openvk_data_t *data, const char *api_base_url);
 
@@ -41,7 +48,7 @@ int openvk_set_instance(openvk_data_t *data, const char *api_base_url);
  * openvk_set_token: Sets auth token to use to strdupped version
  * @param data: data struct
  * @param token: auth token
- * @returns 0 on success
+ * @returns OVK_API_OK
  */
 int openvk_set_token(openvk_data_t *data, const char *token);
 
@@ -52,7 +59,7 @@ int openvk_set_token(openvk_data_t *data, const char *token);
  * @param resp_buf: pointer to resp_buf(gets allocated by function)
  * @param use_token: use token in request
  * @param params: request paramets(can be set to 0)
- * @returns 0 on success
+ * @returns OVK_API_OK
  */
 int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, bool use_token, const char *params);
 
@@ -63,7 +70,7 @@ int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, 
  * @param password: Password
  * @param two_fac_code: (Optional)2FA code
  * @param is_roamin: https://openvk.github.io/docs/openvk_engine/api/authorization/#roaming
- * @returns 0 on success, -1 on error
+ * @returns OVK_API_OK
  */
 int openvk_auth(openvk_data_t *data, const char *user, const char *password, const char *two_fac_code, bool is_roaming);
 
@@ -71,18 +78,19 @@ int openvk_auth(openvk_data_t *data, const char *user, const char *password, con
  * openvk_get_resp: Parses json and returns response node in resp_node
  * @param resp: response buffer from openvk_call
  * @param resp_node: pointer to resp_node
- * @returns error info in json_error_t if something got wrong
+ * @returns OVK_API_OK
  */
-json_error_t openvk_get_resp(const char *resp, json_t **resp_node);
+int openvk_get_resp(const char *resp, json_t **resp_node);
 
 // From classes/account.c
 
 /**
  * openvk_account_getProfileInfo: calls api method account.getProfileInfo, parses response and returns profile info in struct ovk_getProfileInfo
  * @param data: data struct
- * @returns profile info
+ * @param out: pointer to struct to store out
+ * @returns 0 and profile info in out on sucess
  */
-struct ovk_getProfileInfo openvk_account_getProfileInfo(openvk_data_t *data);
+int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo *out);
 
 // From classes/audio.c
 
@@ -90,15 +98,17 @@ struct ovk_getProfileInfo openvk_account_getProfileInfo(openvk_data_t *data);
  * openvk_audio_get: calls api method audio.get with specified parameters and returs parsed data in ovk_audio_get. You can set one parameter to 0 to use default value
  * @param data: data struct
  * (you can check descriptions of parameters in https://openvk.github.io/docs/openvk_engine/api/methods/audio/get/)
- * @returns parsed data
+ * @param out: pointer to struct to store data
+ * @returns OVK_API_OK on success
  */
-struct ovk_audio_get openvk_audio_get(openvk_data_t *data, 
+int openvk_audio_get(openvk_data_t *data, 
                                     int owner_id, 
                                     int album_id, 
                                     bool audio_ids, 
                                     unsigned int offset, 
                                     unsigned int count, 
-                                    bool uploaded_only);
+                                    bool uploaded_only,
+                                    struct ovk_audio_get *out);
 
 
 // From classes/ovk.c
@@ -106,9 +116,10 @@ struct ovk_audio_get openvk_audio_get(openvk_data_t *data,
 /**
  * openvk_ovk_aboutInstance: calls api method ovk.aboutInstance, parses response and returns it in struct ovk_instanceInfo
  * @param data: data struct
- * @returns parsed data
+ * @param out: pointer to struct to store data
+ * @returns OVK_API_OK on success
  */
-struct ovk_instanceInfo openvk_ovk_aboutInstance(openvk_data_t *data);
+int openvk_ovk_aboutInstance(openvk_data_t *data, struct ovk_instanceInfo *out);
 
 /**
  * openvk_ovk_version: calls api method ovk.version and returns instance version
