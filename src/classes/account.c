@@ -42,3 +42,14 @@ int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo
 
     return OVK_API_OK;
 }
+
+int openvk_account_setOnline(openvk_data_t *data) {
+    const char *resp_buf;
+    int ret = openvk_call(data, "account.setOnline", &resp_buf, true, 0);
+
+    if (ret != OVK_API_OK) {
+        return OVK_API_ERROR;
+    }
+    if (resp_buf[0] != '1') return OVK_API_ERROR; // by ovk's api spec account.setOnline by default returns 1, so i guess if response 1, then something went wrong
+    return OVK_API_OK;
+}

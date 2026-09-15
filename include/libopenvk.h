@@ -40,7 +40,7 @@ void openvk_free(openvk_data_t *data);
  * openvk_set_instance: Sets instance api base url(without /method) to strdupped version
  * @param data: data struct
  * @param api_base_url: Instance api base url
- * @returns OVK_API_OK
+ * @returns OVK_API_OK on success
  */
 int openvk_set_instance(openvk_data_t *data, const char *api_base_url);
 
@@ -48,7 +48,7 @@ int openvk_set_instance(openvk_data_t *data, const char *api_base_url);
  * openvk_set_token: Sets auth token to use to strdupped version
  * @param data: data struct
  * @param token: auth token
- * @returns OVK_API_OK
+ * @returns OVK_API_OK on success
  */
 int openvk_set_token(openvk_data_t *data, const char *token);
 
@@ -59,7 +59,7 @@ int openvk_set_token(openvk_data_t *data, const char *token);
  * @param resp_buf: pointer to resp_buf(gets allocated by function)
  * @param use_token: use token in request
  * @param params: request paramets(can be set to 0)
- * @returns OVK_API_OK
+ * @returns OVK_API_OK on success
  */
 int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, bool use_token, const char *params);
 
@@ -70,7 +70,7 @@ int openvk_call(openvk_data_t *data, const char *method, const char **resp_buf, 
  * @param password: Password
  * @param two_fac_code: (Optional)2FA code
  * @param is_roamin: https://openvk.github.io/docs/openvk_engine/api/authorization/#roaming
- * @returns OVK_API_OK
+ * @returns OVK_API_OK  on success
  */
 int openvk_auth(openvk_data_t *data, const char *user, const char *password, const char *two_fac_code, bool is_roaming);
 
@@ -78,7 +78,7 @@ int openvk_auth(openvk_data_t *data, const char *user, const char *password, con
  * openvk_get_resp: Parses json and returns response node in resp_node
  * @param resp: response buffer from openvk_call
  * @param resp_node: pointer to resp_node
- * @returns OVK_API_OK
+ * @returns OVK_API_OK on success
  */
 int openvk_get_resp(const char *resp, json_t **resp_node);
 
@@ -88,9 +88,16 @@ int openvk_get_resp(const char *resp, json_t **resp_node);
  * openvk_account_getProfileInfo: calls api method account.getProfileInfo, parses response and returns profile info in struct ovk_getProfileInfo
  * @param data: data struct
  * @param out: pointer to struct to store out
- * @returns 0 and profile info in out on sucess
+ * @returns OVK_API_OK and profile info in out on sucess
  */
 int openvk_account_getProfileInfo(openvk_data_t *data, struct ovk_getProfileInfo *out);
+
+/**
+ * openvk_account_setOnline: calls api method account.setOnline
+ * @param data: data struct
+ * @return OVK_API_OK on success
+ */
+int openvk_account_setOnline(openvk_data_t *data);
 
 // From classes/audio.c
 
